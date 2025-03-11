@@ -1,5 +1,4 @@
 // === Константы (переносим в параметры конфигурации) ===
-// const song = 'track1'; // Уберем, будет передаваться как параметр
 const skipTime = 30;
 
 // === Настройка отладки ===
@@ -9,23 +8,27 @@ const DEBUG_MODE = true; // Установите в true для включени
 const volumeLevels = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100];
 
 // === Функции ===
-const debugLog = (message) => {if (DEBUG_MODE) {console.log(message);}};
+const debugLog = (message) => { if (DEBUG_MODE) { console.log(message); } };
 
 const formatTime = (seconds) => {
-	const minutes = Math.floor(seconds / 60);
-	const remainingSeconds = Math.floor(seconds % 60);
-	const formattedMinutes = String(minutes).padStart(2, '0');
-	const formattedSeconds = String(remainingSeconds).padStart(2, '0');
-	return `${formattedMinutes}:${formattedSeconds}`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(remainingSeconds).padStart(2, '0');
+    return `${formattedMinutes}:${formattedSeconds}`;
 };
 
 // Функция создания плеера (принимает конфигурацию)
 const createAkimPlayer = (config) => {
-    const { containerId, song, initialVolume = 0.5, autoplay = false } = config; // Параметры конфигурации
+    const { containerId, song, initialVolume = 0.5, autoplay = false, mainColor = '#FF834D' } = config; // Параметры конфигурации
     if (!containerId || !song) {
         if (DEBUG_MODE) { console.error("Необходимы параметры: containerId и song"); }
         return null; // Прерываем выполнение, если нет необходимых параметров
     }
+
+    const replaceColor = (svg) => {
+        return svg.replaceAll('#FF834D', mainColor);
+    };
 
     // === Создание DOM элементов (динамически) ===
     const akimContainer = document.createElement('div');
@@ -44,15 +47,15 @@ const createAkimPlayer = (config) => {
 
     const prevBtn = document.createElement('div');
     prevBtn.classList.add('btn', 'prev', 'pointer', 'border');
-    prevBtn.innerHTML = '<img src="" alt="prevBtn">';
+    prevBtn.innerHTML = replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 30L30 55V43L19.5 30L30 17V5L10 30Z" fill="#FF834D"/><path d="M30 30L50 55V43L39.5 30L50 17V5L30 30Z" fill="#FF834D"/></svg>`);
 
     const playBtn = document.createElement('div');
     playBtn.classList.add('btn', 'play', 'pointer', 'border');
-    playBtn.innerHTML = '<img src="" alt="play/pause" class="img__play">';
+    playBtn.innerHTML = replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 30L10 55V5L50 30Z" fill="#FF834D"/></svg>`);
 
     const nextBtn = document.createElement('div');
     nextBtn.classList.add('btn', 'next', 'pointer', 'border');
-    nextBtn.innerHTML = '<img src="" alt="nextBtn">';
+    nextBtn.innerHTML = replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 30L30 55V43L40.5 30L30 17V5L50 30Z" fill="#FF834D"/><path d="M30 30L10 55V43L20.5 30L10 17V5L30 30Z" fill="#FF834D"/></svg>`);
 
     const progCont = document.createElement('div');
     progCont.classList.add('progControl', 'pointer', 'border');
@@ -79,7 +82,7 @@ const createAkimPlayer = (config) => {
 
     const volBtn = document.createElement('div');
     volBtn.classList.add('btn', 'volBtn');
-    volBtn.innerHTML = '<img src="" alt="volControl" class="img__src">';
+    volBtn.innerHTML = replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M27.7778 19.2857H10V40.7143H27.7778L50 55V5L27.7778 19.2857Z" fill="#FF834D"/></svg>`);
 
     const volControl = document.createElement('div');
     volControl.classList.add('volControl');
@@ -116,24 +119,16 @@ const createAkimPlayer = (config) => {
 
     // === Функции (локальные для каждого плеера) ===
 
-    const formatTime = (seconds) => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = Math.floor(seconds % 60);
-        const formattedMinutes = String(minutes).padStart(2, '0');
-        const formattedSeconds = String(remainingSeconds).padStart(2, '0');
-        return `${formattedMinutes}:${formattedSeconds}`;
-    };
-
     const playSong = () => {
         if (audio.src === "") { if (DEBUG_MODE) { console.error("Не указан источник аудио!"); } return; }
-        player.classList.add('play'); // Используем переменную player, определенную ниже
-        playBtn.querySelector('.img__play').src = 'ico/pause.svg';
+        player.classList.add('play');
+        playBtn.innerHTML = replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 30L10 55V5L50 30Z" fill="#FF834D"/></svg>`);
         audio.play().then(() => { debugLog("Начало воспроизведения"); }).catch(error => { if (DEBUG_MODE) { console.error("Ошибка воспроизведения:", error); } });
     };
 
     const pauseSong = () => {
-        player.classList.remove('play'); // Используем переменную player, определенную ниже
-        playBtn.querySelector('.img__play').src = 'ico/play.svg';
+        player.classList.remove('play');
+        playBtn.innerHTML = replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 30L10 55V5L50 30Z" fill="#FF834D"/></svg>`);
         audio.pause();
         debugLog("Пауза воспроизведения");
     };
@@ -173,7 +168,7 @@ const createAkimPlayer = (config) => {
     };
 
     const updateVolumeIcon = () => {
-        volBtn.querySelector('img').src = (audio.volume === 0 || isMuted) ? 'ico/volX.svg' : 'ico/vol.svg';
+        volBtn.innerHTML = (audio.volume === 0 || isMuted) ? replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M27.7778 19.2857H10V40.7143H27.7778L50 55V5L27.7778 19.2857Z" fill="#E6E6E6"/><path d="M10 5L50 55" stroke="#FF834D" stroke-width="3"/><path d="M50 5L10 55" stroke="#FF834D" stroke-width="3"/></svg>`) : replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M27.7778 19.2857H10V40.7143H27.7778L50 55V5L27.7778 19.2857Z" fill="#FF834D"/></svg>`);
     };
 
     const setVolumeToNearestLevel = (volume) => {
@@ -223,7 +218,6 @@ const createAkimPlayer = (config) => {
                 break;
             case 'ArrowLeft':
                 skipBackward();
-                break;
             case ' ': // Space
                 event.preventDefault();
                 player.classList.contains('play') ? pauseSong() : playSong();
@@ -273,7 +267,6 @@ const createAkimPlayer = (config) => {
 
 
     // === Инициализация (локальная для каждого плеера) ===
-    // loadSong(song); // Загрузка песни перенесена в создание элемента audio
     updateVolumeIcon();
     updateSpeedButtonText(); // Устанавливаем начальный текст кнопки скорости.
     if (autoplay) {
@@ -302,16 +295,31 @@ window.initAkimPlayers = () => {
         const song = container.dataset.song;
         const initialVolume = parseFloat(container.dataset.initialVolume) || 0.5;
         const autoplay = container.dataset.autoplay === 'true';
+        const mainColor = container.dataset.mainColor || '#FF834D'; // Default color
         const containerId = container.id; // Используем ID контейнера
 
         // Проверяем, что все необходимые data-атрибуты установлены
-        if (!song) {console.error("Необходимо указать data-song атрибут для контейнера", container);return;}
-        if (!containerId) {console.error("Необходимо указать id для контейнера", container);return;}
+        if (!song) {
+            console.error("Необходимо указать data-song атрибут для контейнера", container);
+            return;
+        }
+        if (!containerId) {
+            console.error("Необходимо указать id для контейнера", container);
+            return;
+        }
 
         // Создаем плеер
-        createAkimPlayer({containerId: containerId, song: song, initialVolume: initialVolume, autoplay: autoplay});
+        createAkimPlayer({
+            containerId: containerId,
+            song: song,
+            initialVolume: initialVolume,
+            autoplay: autoplay,
+            mainColor: mainColor
+        });
     });
 };
 
 // Автоматическая инициализация после загрузки страницы
-document.addEventListener('DOMContentLoaded', () => {window.initAkimPlayers();});
+document.addEventListener('DOMContentLoaded', () => {
+    window.initAkimPlayers();
+});
