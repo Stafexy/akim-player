@@ -7,7 +7,7 @@ const volumeLevels = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30,
 let defaultInitialVolume = 0.5;
 let defaultAutoplay = false;
 let defaultMainColor = '#FF834D';
-let defaultStrokeColor = '#FF834D'; // Добавляем цвет для обводки
+let defaultStrokeColor = '#FF834D';
 
 // === Вспомогательные функции ===
 const debugLog = (message) => { if (DEBUG_MODE) { console.log(message); } };
@@ -44,7 +44,7 @@ const createAkimPlayer = (config) => {
 
     const audio = document.createElement('audio');
     audio.classList.add('audio');
-    audio.src = audioSource; // Источник из параметра
+    audio.src = audioSource;
     audio.volume = initialVolume;
 
     const tbuttons = document.createElement('div');
@@ -272,19 +272,19 @@ const createAkimPlayer = (config) => {
 
     // === Инициализация (локальная для каждого плеера) ===
     updateVolumeIcon();
-    updateSpeedButtonText(); // Устанавливаем начальный текст кнопки скорости.
+    updateSpeedButtonText();
     if (autoplay) {
-        audio.addEventListener('canplay', playSong); // Запускаем воспроизведение после загрузки метаданных
+        audio.addEventListener('canplay', playSong);
     }
 
     // Добавляем плеер в указанный контейнер
     const container = document.getElementById(containerId);
     if (container) {
         container.appendChild(akimContainer);
-        return akimContainer; // Возвращаем созданный элемент плеера
+        return akimContainer;
     } else {
         if (DEBUG_MODE) { console.error(`Контейнер с id "${containerId}" не найден`); }
-        return null; // Возвращаем null, если контейнер не найден
+        return null;
     }
 };
 
@@ -304,9 +304,9 @@ window.initAkimPlayers = () => {
     playerContainers.forEach(container => {
         // Получаем данные для конфигурации из data-атрибутов контейнера
         const song = container.dataset.song;
-        const audioSource = container.dataset.audioSource; // Получаем источник аудио из data-атрибута
+        const audioSource = container.dataset.audioSource;
 
-        const containerId = container.id; // Используем ID контейнера
+        const containerId = container.id;
 
         // Проверяем, что все необходимые data-атрибуты установлены
         if (!song || !containerId || !audioSource) {
@@ -322,7 +322,7 @@ window.initAkimPlayers = () => {
             autoplay: defaultAutoplay,
             mainColor: defaultMainColor,
             strokeColor: defaultStrokeColor,
-            audioSource: audioSource // Передаём источник аудио
+            audioSource: audioSource
         });
     });
 };
