@@ -1,13 +1,14 @@
-// === Константы (переносим в параметры конфигурации) ===
+// === Константы ===
 const skipTime = 30;
-
-// === Настройка отладки ===
-const DEBUG_MODE = true; // Установите в true для включения отладки
-
-// === Шаги громкости ===
+const DEBUG_MODE = true;
 const volumeLevels = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100];
 
-// === Функции ===
+// === Глобальные параметры по умолчанию ===
+let defaultInitialVolume = 0.5;
+let defaultAutoplay = false;
+let defaultMainColor = '#FF834D';
+
+// === Вспомогательные функции ===
 const debugLog = (message) => { if (DEBUG_MODE) { console.log(message); } };
 
 const formatTime = (seconds) => {
@@ -18,38 +19,14 @@ const formatTime = (seconds) => {
     return `${formattedMinutes}:${formattedSeconds}`;
 };
 
-// Функция создания плеера (принимает конфигурацию)
-// === Константы (переносим в параметры конфигурации) ===
-const skipTime = 30;
-
-// === Настройка отладки ===
-const DEBUG_MODE = true; // Установите в true для включения отладки
-
-// === Шаги громкости ===
-const volumeLevels = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100];
-
-// === Функции ===
-const debugLog = (message) => { if (DEBUG_MODE) { console.log(message); } };
-
-const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    const formattedMinutes = String(minutes).padStart(2, '0');
-    const formattedSeconds = String(remainingSeconds).padStart(2, '0');
-    return `${formattedMinutes}:${formattedSeconds}`;
-};
-
-// Функция создания плеера (принимает конфигурацию)
+// === Функция создания плеера ===
 const createAkimPlayer = (config) => {
-    const { containerId, song, initialVolume = 0.5, autoplay = false, mainColor = '#FF834D' } = config; // Параметры конфигурации
+    const { containerId, song, initialVolume, autoplay, mainColor } = config;
+
     if (!containerId || !song) {
         if (DEBUG_MODE) { console.error("Необходимы параметры: containerId и song"); }
-        return null; // Прерываем выполнение, если нет необходимых параметров
+        return null;
     }
-
-    const replaceColor = (svg) => {
-        return svg.replaceAll('#FF834D', mainColor);
-    };
 
     const replaceColor = (svg) => {
         return svg.replaceAll('#FF834D', mainColor);
@@ -65,7 +42,7 @@ const createAkimPlayer = (config) => {
     const audio = document.createElement('audio');
     audio.classList.add('audio');
     audio.src = `audio/${song}.mp3`;
-    audio.volume = initialVolume; // Устанавливаем начальную громкость
+    audio.volume = initialVolume;
 
     const tbuttons = document.createElement('div');
     tbuttons.classList.add('tbuttons');
@@ -148,14 +125,10 @@ const createAkimPlayer = (config) => {
         if (audio.src === "") { if (DEBUG_MODE) { console.error("Не указан источник аудио!"); } return; }
         player.classList.add('play');
         playBtn.innerHTML = replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 30L10 55V5L50 30Z" fill="#FF834D"/></svg>`);
-        player.classList.add('play');
-        playBtn.innerHTML = replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 30L10 55V5L50 30Z" fill="#FF834D"/></svg>`);
         audio.play().then(() => { debugLog("Начало воспроизведения"); }).catch(error => { if (DEBUG_MODE) { console.error("Ошибка воспроизведения:", error); } });
     };
 
     const pauseSong = () => {
-        player.classList.remove('play');
-        playBtn.innerHTML = replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 30L10 55V5L50 30Z" fill="#FF834D"/></svg>`);
         player.classList.remove('play');
         playBtn.innerHTML = replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 30L10 55V5L50 30Z" fill="#FF834D"/></svg>`);
         audio.pause();
@@ -197,7 +170,6 @@ const createAkimPlayer = (config) => {
     };
 
     const updateVolumeIcon = () => {
-        volBtn.innerHTML = (audio.volume === 0 || isMuted) ? replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M27.7778 19.2857H10V40.7143H27.7778L50 55V5L27.7778 19.2857Z" fill="#E6E6E6"/><path d="M10 5L50 55" stroke="#FF834D" stroke-width="3"/><path d="M50 5L10 55" stroke="#FF834D" stroke-width="3"/></svg>`) : replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M27.7778 19.2857H10V40.7143H27.7778L50 55V5L27.7778 19.2857Z" fill="#FF834D"/></svg>`);
         volBtn.innerHTML = (audio.volume === 0 || isMuted) ? replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M27.7778 19.2857H10V40.7143H27.7778L50 55V5L27.7778 19.2857Z" fill="#E6E6E6"/><path d="M10 5L50 55" stroke="#FF834D" stroke-width="3"/><path d="M50 5L10 55" stroke="#FF834D" stroke-width="3"/></svg>`) : replaceColor(`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M27.7778 19.2857H10V40.7143H27.7778L50 55V5L27.7778 19.2857Z" fill="#FF834D"/></svg>`);
     };
 
@@ -295,7 +267,6 @@ const createAkimPlayer = (config) => {
     if (volBtn) { volBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMute(); }); } else { if (DEBUG_MODE) { console.error('Элемент volBtn не найден!'); } }
     if (speedBtn) { speedBtn.addEventListener('click', nextPlaybackSpeed); } else { if (DEBUG_MODE) { console.error('Элемент speedBtn не найден!'); } }
 
-
     // === Инициализация (локальная для каждого плеера) ===
     updateVolumeIcon();
     updateSpeedButtonText(); // Устанавливаем начальный текст кнопки скорости.
@@ -319,13 +290,19 @@ window.initAkimPlayers = () => {
     // Получаем все элементы, которые должны стать контейнерами для плееров
     const playerContainers = document.querySelectorAll('.akim-player-container');
 
+    // Получаем глобальные параметры из атрибутов script
+    const script = document.currentScript;
+    defaultInitialVolume = parseFloat(script.dataset.initialVolume) || defaultInitialVolume;
+    defaultAutoplay = script.dataset.autoplay === 'true' || defaultAutoplay;
+    defaultMainColor = script.dataset.mainColor || defaultMainColor;
+
     // Перебираем все найденные контейнеры
     playerContainers.forEach(container => {
         // Получаем данные для конфигурации из data-атрибутов контейнера
         const song = container.dataset.song;
-        const initialVolume = parseFloat(container.dataset.initialVolume) || 0.5;
-        const autoplay = container.dataset.autoplay === 'true';
-        const mainColor = container.dataset.mainColor || '#FF834D'; // Default color
+        const initialVolume = parseFloat(container.dataset.initialVolume) || defaultInitialVolume;
+        const autoplay = container.dataset.autoplay === 'true' || defaultAutoplay;
+        const mainColor = container.dataset.mainColor || defaultMainColor;
         const containerId = container.id; // Используем ID контейнера
 
         // Проверяем, что все необходимые data-атрибуты установлены
