@@ -30,6 +30,10 @@ const createAkimPlayer = (config) => {
         return svg.replaceAll('#FF834D', mainColor);
     };
 
+    const replaceColor = (svg) => {
+        return svg.replaceAll('#FF834D', mainColor);
+    };
+
     // === Создание DOM элементов (динамически) ===
     const akimContainer = document.createElement('div');
     akimContainer.classList.add('akim');
