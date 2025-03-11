@@ -1,0 +1,7 @@
+{
+    "git.branchProtection": [
+        "main"
+    ],
+    "git.alwaysSignOff": true,
+    "git.verboseCommit": true
+}
