@@ -127,13 +127,13 @@ const createAkimPlayer = (config) => {
     const playSong = () => {
         if (audio.src === "") { if (DEBUG_MODE) { console.error("Не указан источник аудио!"); } return; }
         player.classList.add('play'); // Используем переменную player, определенную ниже
-        playBtn.querySelector('.img__play').src = 'ico/pause.svg';
+        playBtn.querySelector('.img__play').src = 'https://cdn.jsdelivr.net/gh/Stafexy/akim-player@main/ico/pause.svg';
         audio.play().then(() => { debugLog("Начало воспроизведения"); }).catch(error => { if (DEBUG_MODE) { console.error("Ошибка воспроизведения:", error); } });
     };
 
     const pauseSong = () => {
         player.classList.remove('play'); // Используем переменную player, определенную ниже
-        playBtn.querySelector('.img__play').src = 'ico/play.svg';
+        playBtn.querySelector('.img__play').src = 'https://cdn.jsdelivr.net/gh/Stafexy/akim-player@main/ico/play.svg';
         audio.pause();
         debugLog("Пауза воспроизведения");
     };
@@ -173,7 +173,7 @@ const createAkimPlayer = (config) => {
     };
 
     const updateVolumeIcon = () => {
-        volBtn.querySelector('img').src = (audio.volume === 0 || isMuted) ? 'ico/volX.svg' : 'ico/vol.svg';
+        volBtn.querySelector('img').src = (audio.volume === 0 || isMuted) ? 'https://cdn.jsdelivr.net/gh/Stafexy/akim-player@main/ico/volX.svg' : 'https://cdn.jsdelivr.net/gh/Stafexy/akim-player@main/ico/vol.svg';
     };
 
     const setVolumeToNearestLevel = (volume) => {
