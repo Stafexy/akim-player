@@ -1,0 +1,53 @@
+name: Publish to jsDelivr
+
+on:
+  push:
+    branches:
+      - main  # Или другая ветка, где находится ваш код
+    tags:
+      - 'v*'  # Запускать workflow при создании тега, начинающегося с "v" (например, "v1.0.0")
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Или другая версия Node.js
+
+      - name: Install dependencies
+        run: npm install -g semver  # Установите semver (глобально)
+
+      - name: Generate SHA-384 hash
+        id: hash
+        run: |
+          HASH=$(openssl dgst -sha384 akim-player.js -binary | openssl base64 -e)
+          echo "::set-output name=hash::$HASH"
+
+      - name: Get version from package.json
+        id: vars
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "::set-output name=version::$VERSION"
+
+      - name: Commit changes with version (if triggered by tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add akim-player.js package.json
+          git commit -m "Update akim-player.js to version ${{ steps.vars.outputs.version }} (SHA-384: ${{ steps.hash.outputs.hash }})"
+          git push
+      - name: Update jsDelivr cache
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          # Replace with your jsDelivr URL for cache invalidation
+          curl -X PURGE "https://cdn.jsdelivr.net/gh/Stafexy/akim-player@${{ steps.vars.outputs.version }}/akim-player.js"
+          echo "jsDelivr cache invalidated"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
